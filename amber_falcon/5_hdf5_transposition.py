@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import json
-import pathlib
-
 import h5py
 import logging
 import os
 import time
 import numpy as np
 from MDAnalysis import Universe
+import pathlib
 
 import pendulum
 
@@ -33,8 +32,7 @@ CONCEPT = "hdf5_transposition"
 _REF = pendulum.datetime(2025, 9, 10, 16, 0, tz="UTC")
 _now = pendulum.now("UTC")
 _elapsed_min = int(round((_now - _REF).total_seconds() / 60.0))
-_elapsed_min = max(0, min(59, _elapsed_min))
-TIMESTAMP = f"{_REF.format('YYYYMMDD_HHmm')}+{_elapsed_min:02d}m"
+TIMESTAMP = f"{_elapsed_min}"
 UNIQUE_DAG_ID = f"{username}_{CONCEPT}_{TIMESTAMP}"
 
 

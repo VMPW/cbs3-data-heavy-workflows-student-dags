@@ -7,6 +7,7 @@ import time
 import h5py
 import numpy as np
 from MDAnalysis import Universe
+import pathlib
 
 import pendulum
 
@@ -31,8 +32,7 @@ CONCEPT = "hdf5_analysis"
 _REF = pendulum.datetime(2025, 9, 10, 16, 0, tz="UTC")
 _now = pendulum.now("UTC")
 _elapsed_min = int(round((_now - _REF).total_seconds() / 60.0))
-_elapsed_min = max(0, min(59, _elapsed_min))
-TIMESTAMP = f"{_REF.format('YYYYMMDD_HHmm')}+{_elapsed_min:02d}m"
+TIMESTAMP = f"{_elapsed_min}"
 UNIQUE_DAG_ID = f"{username}_{CONCEPT}_{TIMESTAMP}"
 
 def download_dataset(**context):
@@ -119,7 +119,7 @@ def compute_distances_from_indices(**context) -> None:
     print(f"Wrote {len(labels)} distances over {n_frames} frames -> {out_csv}")
 
 def upload_results(**context) -> None:
-    out_dir = context["ti"].xcom_pull(task_ids=context["params"].get("resolve_task_id", "resolve_inputs"), key="out_dir")
+    out_dir = context["ti"].xcom_pull(task_ids=context["params"].get("resolve_task_id", "resolve_analysis_inputs"), key="out_dir")
     if not out_dir:
         raise RuntimeError("out_dir not set")
 
