@@ -21,11 +21,15 @@ except Exception:
 DOWNLOAD_ROOT = "/opt/airflow/data/downloads"
 OUTPUT_ROOT = "/opt/airflow/data/outputs"
 PROJECT_SHORTNAME = "cbs3-ida"
-
-username = "amber_falcon"
-concept = "ptraj_run"
-timestamp = datetime.now().strftime('%Y%m%d')
-UNIQUE_DAG_ID = f"{username}_{concept}_{timestamp}"
+# Standardized DAG ID: {username}_{concept}_{timestamp}
+username = pathlib.Path(__file__).resolve().parent.name
+CONCEPT = "ptraj"
+_REF = pendulum.datetime(2025, 9, 10, 16, 0, tz="UTC")
+_now = pendulum.now("UTC")
+_elapsed_min = int(round((_now - _REF).total_seconds() / 60.0))
+_elapsed_min = max(0, min(59, _elapsed_min))
+TIMESTAMP = f"{_REF.format('YYYYMMDD_HHmm')}+{_elapsed_min:02d}m"
+UNIQUE_DAG_ID = f"{username}_{CONCEPT}_{TIMESTAMP}"
 
 def download_dataset(**context):
     dataset_id = context['dag_run'].conf.get('dataset_id') or context['params']['dataset_id']
