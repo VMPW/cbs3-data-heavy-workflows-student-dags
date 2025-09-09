@@ -129,7 +129,7 @@ def upload_results(**context) -> None:
     irods = iRODS(session=session, suppress_print=False)
 
     # Create a new dataset for the results
-    response = irods.create_dataset(access="project", project=PROJECT_SHORTNAME, title=f"Results for {dataset_id}", description="Results uploaded by Airflow DAG")
+    response = irods.create_dataset(access="project", project=PROJECT_SHORTNAME, title=f"Results for {dataset_id}")
     new_dataset_id = response["dataset_id"]
     print(f"Created new dataset {new_dataset_id} for results.")
 
