@@ -63,7 +63,7 @@ def resolve_analysis_inputs(**context) -> None:
     for root, _dirs, files in os.walk(dataset_dir):
         for fn in files:
             p = os.path.join(root, fn)
-            if fn == "transposed_trajectory.h5" and "hdf5" in os.path.relpath(root, dataset_dir).split(os.sep):
+            if fn == "transposed_trajectory.h5":
                 h5_path = p
             elif fn == "ptraj_indices.in":
                 ptraj_idx_path = p
@@ -77,8 +77,6 @@ def resolve_analysis_inputs(**context) -> None:
     ti = context["ti"]
     ti.xcom_push(key="hdf5_path", value=h5_path)
     ti.xcom_push(key="ptraj_indices_path", value=ptraj_idx_path)
-    ti.xcom_push(key="out_dir", value=out_dir)
-    print(f"Resolved analysis inputs:\n  h5={h5_path}\n  ptraj_indices={ptraj_idx_path}\n  out_dir={out_dir}")
 
 
 def compute_distances_from_indices(**context) -> None:
