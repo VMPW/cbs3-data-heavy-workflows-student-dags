@@ -137,7 +137,7 @@ def transpose_into_hdf5(**context) -> None:
     out_dir = os.path.join(out_root, "hdf5")
     os.makedirs(out_dir, exist_ok=True)
 
-    u = Universe(top, traj)
+    u = Universe(top, traj, topology_format='TOP', format='TRJ')
     frame_limit = context['params'].get('frame_limit')
     atoms = u.select_atoms("all")
     n_atoms = len(atoms)
