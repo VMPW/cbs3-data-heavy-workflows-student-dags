@@ -6,6 +6,7 @@ import logging
 import os
 import time
 import numpy as np
+import tqdm
 from MDAnalysis import Universe
 import pathlib
 
@@ -155,7 +156,7 @@ def transpose_into_hdf5(**context) -> None:
             for aid in range(n_atoms)
         ]
         # fill
-        for i, ts in enumerate(u.trajectory):
+        for i, ts in tqdm.tqdm(enumerate(u.trajectory)):
             if i >= n_frames:
                 break
             pos = atoms.positions  # (n_atoms, 3), float64
