@@ -102,16 +102,32 @@ def compute_distances_from_indices(**context) -> None:
 
     labels = [label for (label, _, _) in pairs]
     n_frames = next(iter(pos.values())).shape[0]
+
+    # Time distance computation
+    t0 = time.perf_counter()
     distances = {label: np.linalg.norm(pos[i] - pos[j], axis=1) for (label, i, j) in pairs}
+    t1 = time.perf_counter()
+    compute_seconds = t1 - t0
 
     out_csv = os.path.join(out_dir, "distances.csv")
+
+    # Time CSV writing
+    t2 = time.perf_counter()
     with open(out_csv, "w") as f:
         f.write("frame," + ",".join(labels) + "\n")
         for fr in range(n_frames):
             f.write(str(fr) + "," + ",".join(f"{distances[label][fr]:.6f}" for label in labels) + "\n")
+    t3 = time.perf_counter()
+    write_seconds = t3 - t2
 
     ti.xcom_push(key="distances_csv", value=out_csv)
-    print(f"Wrote {len(labels)} distances over {n_frames} frames -> {out_csv}")
+    ti.xcom_push(key="compute_seconds", value=compute_seconds)
+    ti.xcom_push(key="write_seconds", value=write_seconds)
+
+    print(
+        f"Computed {len(labels)} distances over {n_frames} frames in {compute_seconds:.3f}s; "
+        f"wrote CSV in {write_seconds:.3f}s -> {out_csv}"
+    )
 
 def upload_results(**context) -> None:
     out_dir = context["ti"].xcom_pull(task_ids="resolve_inputs", key="out_dir")
