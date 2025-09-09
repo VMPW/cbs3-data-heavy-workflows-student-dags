@@ -149,7 +149,8 @@ with DAG(
                 -i "$INFILE"
             """,
         env={
-            "DATASET_DIR": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='dataset_dir') }}",
+            # dataset_dir is produced by download_dataset
+            "DATASET_DIR": "{{ ti.xcom_pull(task_ids='download_dataset', key='dataset_dir') }}",
             "TOP": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='top') }}",
             "INFILE": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='ptraj_in') }}",
         },
