@@ -116,7 +116,7 @@ def compute_distances_from_indices(**context) -> None:
     print(f"Wrote {len(labels)} distances over {n_frames} frames -> {out_csv}")
 
 def upload_results(**context) -> None:
-    out_dir = context["ti"].xcom_pull(task_ids=context["params"].get("resolve_task_id", "resolve_analysis_inputs"), key="out_dir")
+    out_dir = context["ti"].xcom_pull(task_ids="resolve_inputs", key="out_dir")
     if not out_dir:
         raise RuntimeError("out_dir not set")
 
@@ -129,12 +129,8 @@ def upload_results(**context) -> None:
     irods = iRODS(session=session, suppress_print=False)
 
     # Create a new dataset for the results
-    new_dataset_id = irods.create_empty_dataset(
-        access="project",
-        project=PROJECT_SHORTNAME,
-        title=f"Results for {dataset_id}",
-        description="Results uploaded by Airflow DAG",
-    )
+    response = irods.create_dataset(access="project", project=PROJECT_SHORTNAME, title=f"Results for {dataset_id}", description="Results uploaded by Airflow DAG")
+    new_dataset_id = response["dataset_id"]
     print(f"Created new dataset {new_dataset_id} for results.")
 
     # Upload all files from out_dir to the new dataset
@@ -142,13 +138,7 @@ def upload_results(**context) -> None:
         for fn in files:
             local_path = os.path.join(root, fn)
             relative_path = os.path.relpath(local_path, out_dir)
-            irods.upload_file_to_dataset(
-                access="project",
-                project=PROJECT_SHORTNAME,
-                dataset_id=new_dataset_id,
-                local_filepath=local_path,
-                dest_filepath=relative_path,
-            )
+            irods.put_data_object_to_dataset( dataset_id=new_dataset_id, local_filepath=local_path, dataset_filepath="./", access="project", project=PROJECT_SHORTNAME)
             print(f"Uploaded {relative_path} to dataset {new_dataset_id}.")
 
     print(f"All results uploaded to dataset {new_dataset_id}.")
