@@ -24,11 +24,7 @@ PROJECT_SHORTNAME = "cbs3-ida"
 # Standardized DAG ID: {username}_{concept}_{timestamp}
 username = pathlib.Path(__file__).resolve().parent.name
 CONCEPT = "ptraj"
-_REF = pendulum.datetime(2025, 9, 10, 16, 0, tz="UTC")
-_now = pendulum.now("UTC")
-_elapsed_min = int(round((_now - _REF).total_seconds() / 60.0))
-TIMESTAMP = f"{_elapsed_min}"
-UNIQUE_DAG_ID = f"{username}_{CONCEPT}_{TIMESTAMP}"
+UNIQUE_DAG_ID = f"{username}_{CONCEPT}"
 
 def download_dataset(**context):
     dataset_id = context['dag_run'].conf.get('dataset_id') or context['params']['dataset_id']
@@ -103,7 +99,7 @@ with DAG(
     params={
         "dataset_id": "",
     },
-    tags=["simulation", "workshop"],
+    tags=["simulation", "workshop", CONCEPT, username],
 ) as dag:
     fetch_data = PythonOperator(
         task_id="download_dataset",

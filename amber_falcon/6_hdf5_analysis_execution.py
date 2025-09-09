@@ -29,11 +29,7 @@ PROJECT_SHORTNAME = "cbs3-ida"
 # Standardized DAG ID: {username}_{concept}_{timestamp}
 username = pathlib.Path(__file__).resolve().parent.name
 CONCEPT = "hdf5_analysis"
-_REF = pendulum.datetime(2025, 9, 10, 16, 0, tz="UTC")
-_now = pendulum.now("UTC")
-_elapsed_min = int(round((_now - _REF).total_seconds() / 60.0))
-TIMESTAMP = f"{_elapsed_min}"
-UNIQUE_DAG_ID = f"{username}_{CONCEPT}_{TIMESTAMP}"
+UNIQUE_DAG_ID = f"{username}_{CONCEPT}"
 
 def download_dataset(**context):
     dataset_id = context['dag_run'].conf.get('dataset_id') or context['params']['dataset_id']
@@ -165,7 +161,7 @@ with DAG(
         "dataset_id": "",  # pass the RESULTS dataset id from the first DAG
         "resolve_task_id": "resolve_analysis_inputs",
     },
-    tags=["analysis", "workshop"],
+    tags=["analysis", "workshop", CONCEPT, username],
 ) as analysis_dag:
     dl = PythonOperator(
         task_id="download_dataset",

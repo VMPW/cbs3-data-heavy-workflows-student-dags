@@ -21,7 +21,10 @@ except Exception:
 DOWNLOAD_ROOT = "/opt/airflow/data/downloads"
 OUTPUT_ROOT = "/opt/airflow/data/outputs"
 PROJECT_SHORTNAME = "cbs3-ida"
-UNIQUE_DAG_ID = "amber_falcon"
+# Standardized DAG ID: {username}_{concept}_{timestamp}
+username = pathlib.Path(__file__).resolve().parent.name
+CONCEPT = "ptraj"
+UNIQUE_DAG_ID = f"{username}_{CONCEPT}"
 
 def download_dataset(**context):
     dataset_id = context['dag_run'].conf.get('dataset_id') or context['params']['dataset_id']
@@ -55,7 +58,7 @@ with DAG(
     params={
         "dataset_id": "",
     },
-    tags=["simulation", "workshop"],
+    tags=["simulation", "workshop", CONCEPT, username],
 ) as dag:
     fetch_data = PythonOperator(
         task_id="download_dataset",
