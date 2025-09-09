@@ -77,7 +77,7 @@ def resolve_analysis_inputs(**context) -> None:
     ti = context["ti"]
     ti.xcom_push(key="hdf5_path", value=h5_path)
     ti.xcom_push(key="ptraj_indices_path", value=ptraj_idx_path)
-
+    ti.xcom_push(key="out_dir", value=out_dir)
 
 def compute_distances_from_indices(**context) -> None:
     ti = context["ti"]
