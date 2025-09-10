@@ -160,5 +160,5 @@ with DAG(
         python_callable=upload_results,
     )
 
-    upload >> fetch_data >> resolve >> run_cpptraj
+    fetch_data >> resolve >> run_cpptraj >> upload
 
