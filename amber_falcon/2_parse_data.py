@@ -32,7 +32,6 @@ def download_dataset(**context):
         raise ValueError("No dataset_id provided. Set Variable UNIFIED_DATASET_ID or pass it in conf/params.")
     os.makedirs(DOWNLOAD_ROOT, exist_ok=True)
     out_dir = os.path.join(DOWNLOAD_ROOT, dataset_id)
-    context["ti"].xcom_push(key="dataset_dir", value=out_dir)
 
     if os.path.exists(out_dir):
         print(f"Dataset {dataset_id} already present at {out_dir}; skipping download.")
@@ -45,6 +44,7 @@ def download_dataset(**context):
     print(f"Downloading dataset {dataset_id} to {DOWNLOAD_ROOT}...")
     irods.download_dataset_as_directory(access="project", project=PROJECT_SHORTNAME, dataset_id=dataset_id, local_directorypath=DOWNLOAD_ROOT)
     print("Download finished.")
+    context["ti"].xcom_push(key="dataset_dir", value=out_dir)
 
 def resolve_inputs(**context) -> None:
     dataset_dir = context["ti"].xcom_pull(task_ids="download_dataset", key="dataset_dir")
@@ -107,7 +107,7 @@ with DAG(
     )
     resolve = PythonOperator(
         task_id="resolve_inputs",
-        python_callable=OH_NO_THIS_IS_NOT_CORRECT_AT_ALL_THIS_SHOULD_CALL_A_FUNCTION_NOT_BE_A_STRING,
+        python_callable=OH_NO_THIS_IS_NOT_CORRECT_AT_ALL_THIS_SHOULD_CALL_A_FUNCTION_NOT_BE_A_STRING_SILLY_SILLY_DAVID,
     )
 
     fetch_data >> resolve

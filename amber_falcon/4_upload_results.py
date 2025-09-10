@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 import os
 import pathlib
-from os import access
-
 import pendulum
 
 from airflow import DAG
@@ -119,7 +117,6 @@ def upload_results(**context) -> None:
             print(f"Uploaded {relative_path} to dataset {new_dataset_id}.")
 
     print(f"All results uploaded to dataset {new_dataset_id}.")
-
 with DAG(
     dag_id=UNIQUE_DAG_ID,
     start_date=pendulum.datetime(2025, 9, 1, tz="UTC"),
@@ -149,14 +146,11 @@ with DAG(
               # Run cpptraj using the resolved topology and input file
               /tmp/cpptraj/bin/cpptraj \
                 -p "$TOP" \
-                -y "$TRAJ" \
                 -i "$INFILE"
             """,
         env={
-            # dataset_dir is produced by download_dataset
-            "DATASET_DIR": "{{ ti.xcom_pull(task_ids='download_dataset', key='dataset_dir') }}",
+            "DATASET_DIR": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='dataset_dir') }}",
             "TOP": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='top') }}",
-            "TRAJ": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='traj') }}",
             "INFILE": "{{ ti.xcom_pull(task_ids='resolve_inputs', key='ptraj_in') }}",
         },
     )
@@ -166,4 +160,5 @@ with DAG(
         python_callable=upload_results,
     )
 
-    fetch_data >> resolve >> run_cpptraj >> upload
+    upload >> fetch_data >> resolve >> run_cpptraj
+

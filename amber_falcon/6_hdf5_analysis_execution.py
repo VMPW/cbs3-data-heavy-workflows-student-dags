@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import time
 import h5py
 import numpy as np
-from MDAnalysis import Universe
 import pathlib
 
 import pendulum
@@ -79,6 +77,7 @@ def resolve_analysis_inputs(**context) -> None:
     ti.xcom_push(key="ptraj_indices_path", value=ptraj_idx_path)
     ti.xcom_push(key="out_dir", value=out_dir)
 
+
 def compute_distances_from_indices(**context) -> None:
     ti = context["ti"]
     h5_path = ti.xcom_pull(task_ids="resolve_analysis_inputs", key="hdf5_path")
@@ -95,7 +94,7 @@ def compute_distances_from_indices(**context) -> None:
                 pairs.append((label, i, j))
 
     needed = sorted({i for _, i, _ in pairs} | {j for _, _, j in pairs})
-    t0 = time.perf_counter()
+
     with h5py.File(h5_path, "r") as hf:
         g = hf["run0"]
         pos = {idx: g[f"atom{idx}"][...] for idx in needed}
@@ -104,6 +103,7 @@ def compute_distances_from_indices(**context) -> None:
     n_frames = next(iter(pos.values())).shape[0]
 
     # Time distance computation
+    t0 = time.perf_counter()
     distances = {label: np.linalg.norm(pos[i] - pos[j], axis=1) for (label, i, j) in pairs}
     t1 = time.perf_counter()
     compute_seconds = t1 - t0
@@ -127,6 +127,7 @@ def compute_distances_from_indices(**context) -> None:
         f"Computed {len(labels)} distances over {n_frames} frames in {compute_seconds:.3f}s; "
         f"wrote CSV in {write_seconds:.3f}s -> {out_csv}"
     )
+
 
 def upload_results(**context) -> None:
     out_dir = context["ti"].xcom_pull(task_ids="resolve_inputs", key="out_dir")

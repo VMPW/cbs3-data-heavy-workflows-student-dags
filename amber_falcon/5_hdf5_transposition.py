@@ -6,9 +6,9 @@ import logging
 import os
 import time
 import numpy as np
-import tqdm
 from MDAnalysis import Universe
 import pathlib
+import tqdm
 
 import pendulum
 
