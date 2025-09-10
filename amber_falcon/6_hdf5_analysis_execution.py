@@ -95,7 +95,7 @@ def compute_distances_from_indices(**context) -> None:
                 pairs.append((label, i, j))
 
     needed = sorted({i for _, i, _ in pairs} | {j for _, _, j in pairs})
-
+    t0 = time.perf_counter()
     with h5py.File(h5_path, "r") as hf:
         g = hf["run0"]
         pos = {idx: g[f"atom{idx}"][...] for idx in needed}
@@ -104,7 +104,6 @@ def compute_distances_from_indices(**context) -> None:
     n_frames = next(iter(pos.values())).shape[0]
 
     # Time distance computation
-    t0 = time.perf_counter()
     distances = {label: np.linalg.norm(pos[i] - pos[j], axis=1) for (label, i, j) in pairs}
     t1 = time.perf_counter()
     compute_seconds = t1 - t0

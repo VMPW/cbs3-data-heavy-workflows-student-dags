@@ -1,2 +1,4 @@
 admin
 create_user_folders.sh
+transfer_dag_to_students.sh
+docs
