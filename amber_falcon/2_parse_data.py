@@ -107,7 +107,7 @@ with DAG(
     )
     resolve = PythonOperator(
         task_id="resolve_inputs",
-        python_callable=resolve_inputs,
+        python_callable=OH_NO_THIS_IS_NOT_CORRECT_AT_ALL_THIS_SHOULD_CALL_A_FUNCTION_NOT_BE_A_STRING,
     )
 
     fetch_data >> resolve

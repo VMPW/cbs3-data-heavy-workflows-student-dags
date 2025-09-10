@@ -1,0 +1,14 @@
+Great, you managed to find the dataset_info.txt file!
+
+Our datasets are saved in LEXIS, we will be working with this one:
+
+https://portal.lexis.tech/uploadDataSets/94c41676-8d63-11f0-aa5f-c687956b5905/details
+
+To get there, login through MyACCESSID with your university credentials.
+Once logged in, you will need to request access to the dataset by clicking on the "Projects" section on the left.
+Click on "Request Project Access" and type in 'cbs3-ida'
+
+If this doesn't work, or you just can't be bothered here is the dataset id you will need to run the airflow:
+94c41676-8d63-11f0-aa5f-c687956b5905
+
+
